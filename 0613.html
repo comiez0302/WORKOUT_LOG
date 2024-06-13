@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ベンチプレス ルーティン</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .highlight-green {
+            background-color: #c6efce;
+        }
+        .highlight-blue {
+            border: 2px solid blue;
+        }
+        .highlight-red {
+            border: 2px solid red;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+        }
+        .header h2 {
+            margin-right: 20px;
+        }
+        .header input {
+            margin-left: 10px;
+        }
+    </style>
+    <script>
+        function updateTrainingDate() {
+            const dateInput = document.getElementById('training-date-input').value;
+            const year = new Date().getFullYear(); // 現在の年を取得
+            if (dateInput.length === 4) {
+                const month = dateInput.slice(0, 2);
+                const day = dateInput.slice(2, 4);
+                const formattedDate = `${year}/${month}/${day}`;
+                document.getElementById('training-date-display').innerText = formattedDate;
+            } else {
+                alert('日付はMMDD形式で入力してください');
+            }
+        }
+
+        function makeEditable(event) {
+            const target = event.target;
+            if (target.tagName.toLowerCase() === 'td') {
+                const currentValue = target.innerText;
+                target.innerHTML = `<input type="text" value="${currentValue}" onblur="updateCell(this)" onkeypress="checkEnter(event, this)">`;
+                target.firstChild.focus();
+            }
+        }
+
+        function updateCell(input) {
+            const newValue = input.value;
+            input.parentElement.innerText = newValue;
+        }
+
+        function checkEnter(event, input) {
+            if (event.key === 'Enter') {
+                updateCell(input);
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="header">
+    <h2>ベンチプレス</h2>
+    <p>トレーニング日：<span id="training-date-display">2024/06/14</span></p>
+    <input type="text" id="training-date-input" maxlength="4" placeholder="MMDD">
+    <button onclick="updateTrainingDate()">更新</button>
+</div>
+
+<table onclick="makeEditable(event)">
+    <tr>
+        <th>SET</th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+        <th>6</th>
+        <th>7</th>
+        <th>8</th>
+        <th>9</th>
+        <th>10</th>
+        <th>11</th>
+    </tr>
+    <tr>
+        <td>重量</td>
+        <td>60</td>
+        <td>70</td>
+        <td>80</td>
+        <td>90</td>
+        <td class="highlight-green">100</td>
+        <td>110</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+    </tr>
+    <tr>
+        <td>REP</td>
+        <td>3</td>
+        <td>3</td>
+        <td>3</td>
+        <td>2</td>
+        <td>1</td>
+        <td>1</td>
+        <td>限界まで</td>
+        <td>限界まで</td>
+        <td>限界まで</td>
+        <td>限界まで</td>
+        <td>限界まで</td>
+    </tr>
+</table>
+
+</body>
+</html>
