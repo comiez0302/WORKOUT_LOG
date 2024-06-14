@@ -33,18 +33,22 @@
         .header h2 {
             margin-right: 20px;
         }
-        .header input {
+        .date-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px; /* Add some margin to separate from the table */
+        }
+        .date-container input {
             margin-left: 10px;
         }
     </style>
     <script>
         function updateTrainingDate() {
             const dateInput = document.getElementById('training-date-input').value;
-            const year = new Date().getFullYear(); // 現在の年を取得
             if (dateInput.length === 4) {
                 const month = dateInput.slice(0, 2);
                 const day = dateInput.slice(2, 4);
-                const formattedDate = `${year}/${month}/${day}`;
+                const formattedDate = `${month}/${day}`;
                 document.getElementById('training-date-display').innerText = formattedDate;
             } else {
                 alert('日付はMMDD形式で入力してください');
@@ -70,15 +74,30 @@
                 updateCell(input);
             }
         }
+
+        function editDate() {
+            const dateDisplay = document.getElementById('training-date-display');
+            const currentValue = dateDisplay.innerText.replace(/\//g, '');
+            dateDisplay.innerHTML = `<input type="text" value="${currentValue}" id="training-date-input" maxlength="4" onblur="updateTrainingDate()" onkeypress="checkEnterDate(event)">`;
+            dateDisplay.firstChild.focus();
+        }
+
+        function checkEnterDate(event) {
+            if (event.key === 'Enter') {
+                updateTrainingDate();
+            }
+        }
     </script>
 </head>
 <body>
 
 <div class="header">
     <h2>ベンチプレス</h2>
-    <p>トレーニング日：<span id="training-date-display">2024/06/14</span></p>
-    <input type="text" id="training-date-input" maxlength="4" placeholder="MMDD">
-    <button onclick="updateTrainingDate()">更新</button>
+</div>
+
+<div class="date-container">
+    <p>前回：<span id="training-date-display" onclick="editDate()">06/14</span></p>
+    <input type="text" id="training-date-input" maxlength="4" placeholder="MMDD" style="display:none;">
 </div>
 
 <table onclick="makeEditable(event)">
