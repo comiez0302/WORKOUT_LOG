@@ -53,10 +53,16 @@
                 const month = dateInput.slice(0, 2);
                 const day = dateInput.slice(2, 4);
                 const formattedDate = `${month}/${day}`;
-                document.getElementById('training-date-display').innerText = formattedDate;
+                const dayOfWeek = getDayOfWeek(new Date(new Date().getFullYear(), month - 1, day));
+                document.getElementById('training-date-display').innerText = `${formattedDate} (${dayOfWeek})`;
             } else {
                 alert('日付はMMDD形式で入力してください');
             }
+        }
+
+        function getDayOfWeek(date) {
+            const days = ['日', '月', '火', '水', '木', '金', '土'];
+            return days[date.getDay()];
         }
 
         function makeEditable(event) {
@@ -81,7 +87,7 @@
 
         function editDate() {
             const dateDisplay = document.getElementById('training-date-display');
-            const currentValue = dateDisplay.innerText.replace(/\//g, '');
+            const currentValue = dateDisplay.innerText.replace(/\//g, '').replace(/\s*\(.*\)$/, '');
             dateDisplay.innerHTML = `<input type="text" value="${currentValue}" id="training-date-input" maxlength="4" onblur="updateTrainingDate()" onkeypress="checkEnterDate(event)">`;
             dateDisplay.firstChild.focus();
         }
@@ -90,6 +96,13 @@
             if (event.key === 'Enter') {
                 updateTrainingDate();
             }
+        }
+
+        window.onload = function() {
+            const initialDate = document.getElementById('training-date-display').innerText;
+            const [month, day] = initialDate.split('/');
+            const dayOfWeek = getDayOfWeek(new Date(new Date().getFullYear(), month - 1, day));
+            document.getElementById('training-date-display').innerText = `${initialDate} (${dayOfWeek})`;
         }
     </script>
 </head>
@@ -141,11 +154,11 @@
         <td>2</td>
         <td>1</td>
         <td>1</td>
-        <td>限界まで</td>
-        <td>限界まで</td>
-        <td>限界まで</td>
-        <td>限界まで</td>
-        <td>限界まで</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
     </tr>
 </table>
 
