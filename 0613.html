@@ -29,6 +29,7 @@
         .header {
             display: flex;
             align-items: center;
+            margin-bottom: 0; /* ヘッダーと日付の間の隙間をなくす */
         }
         .header h2 {
             margin-right: 20px;
@@ -36,7 +37,10 @@
         .date-container {
             display: flex;
             align-items: center;
-            margin-bottom: 20px; /* Add some margin to separate from the table */
+            margin-bottom: 20px; /* 日付とテーブルの間の隙間 */
+        }
+        .date-container p {
+            margin: 0; /* パラグラフのデフォルトマージンをなくす */
         }
         .date-container input {
             margin-left: 10px;
