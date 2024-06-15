@@ -41,31 +41,38 @@
         }
         .date-container p {
             margin: 0; /* パラグラフのデフォルトマージンをなくす */
+            display: flex;
+            align-items: center;
         }
         .date-container input {
-            margin-left: 10px;
-        }
-        .date-input {
+            margin-left: 0; /* テキストボックスと前回の隙間をなくす */
             border: none;
             text-align: left;
+            font-size: 1em; /* 文字の大きさを「前回」と同じにする */
         }
     </style>
     <script>
         function updateTrainingDate() {
             const dateInput = document.getElementById('training-date-display').value;
-            if (dateInput.length === 5 && dateInput.includes('/')) {
-                const [month, day] = dateInput.split('/');
-                if (month.length === 2 && day.length === 2) {
+            if (dateInput.length === 4 && !isNaN(dateInput)) {
+                const month = dateInput.slice(0, 2);
+                const day = dateInput.slice(2, 4);
+                const date = new Date(new Date().getFullYear(), month - 1, day);
+                if (isValidDate(date)) {
                     const formattedDate = `${month}/${day}`;
-                    const dayOfWeek = getDayOfWeek(new Date(new Date().getFullYear(), month - 1, day));
+                    const dayOfWeek = getDayOfWeek(date);
                     document.getElementById('training-date-display').value = `${formattedDate} (${dayOfWeek})`;
                     localStorage.setItem('trainingDate', `${formattedDate} (${dayOfWeek})`);
                 } else {
-                    alert('日付はMM/DD形式で入力してください');
+                    alert('無効な日付です。もう一度お試しください。');
                 }
             } else {
-                alert('日付はMM/DD形式で入力してください');
+                alert('日付はMMDD形式で入力してください');
             }
+        }
+
+        function isValidDate(date) {
+            return date instanceof Date && !isNaN(date);
         }
 
         function getDayOfWeek(date) {
@@ -73,7 +80,7 @@
             return days[date.getDay()];
         }
 
-        function checkEnter(event, input) {
+        function checkEnter(event) {
             if (event.key === 'Enter') {
                 updateTrainingDate();
             }
@@ -94,7 +101,7 @@
 </div>
 
 <div class="date-container">
-    <p>前回：<input type="text" id="training-date-display" class="date-input" placeholder="MM/DD" onclick="this.select()" onblur="updateTrainingDate()" onkeypress="checkEnter(event, this)"></p>
+    <p>前回：<input type="text" id="training-date-display" class="date-input" placeholder="MMDD" onclick="this.select()" onblur="updateTrainingDate()" onkeypress="checkEnter(event)"></p>
 </div>
 
 <table onclick="makeEditable(event)">
