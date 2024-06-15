@@ -45,19 +45,26 @@
         .date-container input {
             margin-left: 10px;
         }
+        .date-input {
+            border: none;
+            text-align: left;
+        }
     </style>
     <script>
         function updateTrainingDate() {
-            const dateInput = document.getElementById('training-date-input').value;
-            if (dateInput.length === 4) {
-                const month = dateInput.slice(0, 2);
-                const day = dateInput.slice(2, 4);
-                const formattedDate = `${month}/${day}`;
-                const dayOfWeek = getDayOfWeek(new Date(new Date().getFullYear(), month - 1, day));
-                document.getElementById('training-date-display').innerText = `${formattedDate} (${dayOfWeek})`;
-                localStorage.setItem('trainingDate', `${formattedDate} (${dayOfWeek})`);
+            const dateInput = document.getElementById('training-date-display').value;
+            if (dateInput.length === 5 && dateInput.includes('/')) {
+                const [month, day] = dateInput.split('/');
+                if (month.length === 2 && day.length === 2) {
+                    const formattedDate = `${month}/${day}`;
+                    const dayOfWeek = getDayOfWeek(new Date(new Date().getFullYear(), month - 1, day));
+                    document.getElementById('training-date-display').value = `${formattedDate} (${dayOfWeek})`;
+                    localStorage.setItem('trainingDate', `${formattedDate} (${dayOfWeek})`);
+                } else {
+                    alert('日付はMM/DD形式で入力してください');
+                }
             } else {
-                alert('日付はMMDD形式で入力してください');
+                alert('日付はMM/DD形式で入力してください');
             }
         }
 
@@ -66,34 +73,7 @@
             return days[date.getDay()];
         }
 
-        function makeEditable(event) {
-            const target = event.target;
-            if (target.tagName.toLowerCase() === 'td') {
-                const currentValue = target.innerText;
-                target.innerHTML = `<input type="text" value="${currentValue}" onblur="updateCell(this)" onkeypress="checkEnter(event, this)">`;
-                target.firstChild.focus();
-            }
-        }
-
-        function updateCell(input) {
-            const newValue = input.value;
-            input.parentElement.innerText = newValue;
-        }
-
         function checkEnter(event, input) {
-            if (event.key === 'Enter') {
-                updateCell(input);
-            }
-        }
-
-        function editDate() {
-            const dateDisplay = document.getElementById('training-date-display');
-            const currentValue = dateDisplay.innerText.replace(/\//g, '').replace(/\s*\(.*\)$/, '');
-            dateDisplay.innerHTML = `<input type="text" value="${currentValue}" id="training-date-input" maxlength="4" onblur="updateTrainingDate()" onkeypress="checkEnterDate(event)">`;
-            dateDisplay.firstChild.focus();
-        }
-
-        function checkEnterDate(event) {
             if (event.key === 'Enter') {
                 updateTrainingDate();
             }
@@ -102,7 +82,7 @@
         window.onload = function() {
             const savedDate = localStorage.getItem('trainingDate');
             if (savedDate) {
-                document.getElementById('training-date-display').innerText = savedDate;
+                document.getElementById('training-date-display').value = savedDate;
             }
         }
     </script>
@@ -114,8 +94,7 @@
 </div>
 
 <div class="date-container">
-    <p>前回：<span id="training-date-display" onclick="editDate()"></span></p>
-    <input type="text" id="training-date-input" maxlength="4" placeholder="MMDD" style="display:none;">
+    <p>前回：<input type="text" id="training-date-display" class="date-input" placeholder="MM/DD" onclick="this.select()" onblur="updateTrainingDate()" onkeypress="checkEnter(event, this)"></p>
 </div>
 
 <table onclick="makeEditable(event)">
