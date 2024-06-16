@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ベンチプレス ルーティン</title>
+    <title>トレーニング ルーティン</title>
     <style>
         table {
             border-collapse: collapse;
             width: 100%;
+            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid black;
@@ -31,7 +32,7 @@
         .date-container {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .date-container p {
             margin: 0;
@@ -46,8 +47,8 @@
         }
     </style>
     <script>
-        function updateTrainingDate() {
-            const dateInput = document.getElementById('training-date-display').value;
+        function updateTrainingDate(inputId, storageKey) {
+            const dateInput = document.getElementById(inputId).value;
             if (dateInput.length === 4 && !isNaN(dateInput)) {
                 const month = dateInput.slice(0, 2);
                 const day = dateInput.slice(2, 4);
@@ -55,8 +56,9 @@
                 if (isValidDate(date)) {
                     const formattedDate = `${month}/${day}`;
                     const dayOfWeek = getDayOfWeek(date);
-                    document.getElementById('training-date-display').value = `${formattedDate} (${dayOfWeek})`;
-                    localStorage.setItem('trainingDate', `${formattedDate} (${dayOfWeek})`);
+                    const fullDate = `${formattedDate} (${dayOfWeek})`;
+                    document.getElementById(inputId).value = fullDate;
+                    localStorage.setItem(storageKey, fullDate);
                 } else {
                     alert('無効な日付です。もう一度お試しください。');
                 }
@@ -74,9 +76,9 @@
             return days[date.getDay()];
         }
 
-        function checkEnter(event) {
+        function checkEnter(event, inputId, storageKey) {
             if (event.key === 'Enter') {
-                updateTrainingDate();
+                updateTrainingDate(inputId, storageKey);
             }
         }
 
@@ -103,35 +105,42 @@
         }
 
         function saveTableData() {
-            const table = document.querySelector('table');
-            const data = [];
-            for (let row of table.rows) {
-                const rowData = [];
-                for (let cell of row.cells) {
-                    rowData.push(cell.innerText);
+            const tables = document.querySelectorAll('table');
+            tables.forEach((table, index) => {
+                const data = [];
+                for (let row of table.rows) {
+                    const rowData = [];
+                    for (let cell of row.cells) {
+                        rowData.push(cell.innerText);
+                    }
+                    data.push(rowData);
                 }
-                data.push(rowData);
-            }
-            localStorage.setItem('tableData', JSON.stringify(data));
+                localStorage.setItem(`tableData_${index}`, JSON.stringify(data));
+            });
         }
 
         function loadTableData() {
-            const tableData = JSON.parse(localStorage.getItem('tableData'));
-            if (tableData) {
-                const table = document.querySelector('table');
-                for (let i = 0; i < table.rows.length; i++) {
-                    for (let j = 0; j < table.rows[i].cells.length; j++) {
-                        table.rows[i].cells[j].innerText = tableData[i][j];
+            const tables = document.querySelectorAll('table');
+            tables.forEach((table, index) => {
+                const tableData = JSON.parse(localStorage.getItem(`tableData_${index}`));
+                if (tableData) {
+                    for (let i = 0; i < table.rows.length; i++) {
+                        for (let j = 0; j < table.rows[i].cells.length; j++) {
+                            table.rows[i].cells[j].innerText = tableData[i][j];
+                        }
                     }
                 }
-            }
+            });
         }
 
         window.onload = function() {
-            const savedDate = localStorage.getItem('trainingDate');
-            if (savedDate) {
-                document.getElementById('training-date-display').value = savedDate;
-            }
+            const exerciseDates = ['benchpressDate', 'chinningDate', 'onehandRowDate', 'armCurlDate', 'militaryPressDate'];
+            exerciseDates.forEach((key, index) => {
+                const savedDate = localStorage.getItem(key);
+                if (savedDate) {
+                    document.getElementById(`training-date-display-${index}`).value = savedDate;
+                }
+            });
             loadTableData();
         }
     </script>
@@ -141,11 +150,213 @@
 <div class="header">
     <h2>ベンチプレス</h2>
 </div>
-
 <div class="date-container">
-    <p>前回：<input type="text" id="training-date-display" class="date-input" placeholder="MMDD" onclick="this.select()" onblur="updateTrainingDate()" onkeypress="checkEnter(event)"></p>
+    <p>前回：<input type="text" id="training-date-display-0" class="date-input" placeholder="MMDD" onclick="this.select()" onblur="updateTrainingDate('training-date-display-0', 'benchpressDate')" onkeypress="checkEnter(event, 'training-date-display-0', 'benchpressDate')"></p>
 </div>
+<table onclick="makeEditable(event)">
+    <tr>
+        <th>SET</th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+        <th>6</th>
+        <th>7</th>
+        <th>8</th>
+        <th>9</th>
+        <th>10</th>
+        <th>11</th>
+    </tr>
+    <tr>
+        <td>重量</td>
+        <td>60</td>
+        <td>70</td>
+        <td>80</td>
+        <td>90</td>
+        <td class="highlight-green">100</td>
+        <td>110</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+    </tr>
+    <tr>
+        <td>REP</td>
+        <td>3</td>
+        <td>3</td>
+        <td>3</td>
+        <td>2</td>
+        <td>1</td>
+        <td>1</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+    </tr>
+</table>
 
+<div class="header">
+    <h2>チンニング</h2>
+</div>
+<div class="date-container">
+    <p>前回：<input type="text" id="training-date-display-1" class="date-input" placeholder="MMDD" onclick="this.select()" onblur="updateTrainingDate('training-date-display-1', 'chinningDate')" onkeypress="checkEnter(event, 'training-date-display-1', 'chinningDate')"></p>
+</div>
+<table onclick="makeEditable(event)">
+    <tr>
+        <th>SET</th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+        <th>6</th>
+        <th>7</th>
+        <th>8</th>
+        <th>9</th>
+        <th>10</th>
+        <th>11</th>
+    </tr>
+    <tr>
+        <td>重量</td>
+        <td>60</td>
+        <td>70</td>
+        <td>80</td>
+        <td>90</td>
+        <td class="highlight-green">100</td>
+        <td>110</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+    </tr>
+    <tr>
+        <td>REP</td>
+        <td>3</td>
+        <td>3</td>
+        <td>3</td>
+        <td>2</td>
+        <td>1</td>
+        <td>1</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+    </tr>
+</table>
+
+<div class="header">
+    <h2>ワンハンドロー</h2>
+</div>
+<div class="date-container">
+    <p>前回：<input type="text" id="training-date-display-2" class="date-input" placeholder="MMDD" onclick="this.select()" onblur="updateTrainingDate('training-date-display-2', 'onehandRowDate')" onkeypress="checkEnter(event, 'training-date-display-2', 'onehandRowDate')"></p>
+</div>
+<table onclick="makeEditable(event)">
+    <tr>
+        <th>SET</th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+        <th>6</th>
+        <th>7</th>
+        <th>8</th>
+        <th>9</th>
+        <th>10</th>
+        <th>11</th>
+    </tr>
+    <tr>
+        <td>重量</td>
+        <td>60</td>
+        <td>70</td>
+        <td>80</td>
+        <td>90</td>
+        <td class="highlight-green">100</td>
+        <td>110</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+    </tr>
+    <tr>
+        <td>REP</td>
+        <td>3</td>
+        <td>3</td>
+        <td>3</td>
+        <td>2</td>
+        <td>1</td>
+        <td>1</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+    </tr>
+</table>
+
+<div class="header">
+    <h2>アームカール</h2>
+</div>
+<div class="date-container">
+    <p>前回：<input type="text" id="training-date-display-3" class="date-input" placeholder="MMDD" onclick="this.select()" onblur="updateTrainingDate('training-date-display-3', 'armCurlDate')" onkeypress="checkEnter(event, 'training-date-display-3', 'armCurlDate')"></p>
+</div>
+<table onclick="makeEditable(event)">
+    <tr>
+        <th>SET</th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+        <th>6</th>
+        <th>7</th>
+        <th>8</th>
+        <th>9</th>
+        <th>10</th>
+        <th>11</th>
+    </tr>
+    <tr>
+        <td>重量</td>
+        <td>60</td>
+        <td>70</td>
+        <td>80</td>
+        <td>90</td>
+        <td class="highlight-green">100</td>
+        <td>110</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+        <td>60</td>
+    </tr>
+    <tr>
+        <td>REP</td>
+        <td>3</td>
+        <td>3</td>
+        <td>3</td>
+        <td>2</td>
+        <td>1</td>
+        <td>1</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+    </tr>
+</table>
+
+<div class="header">
+    <h2>ミリタリープレス</h2>
+</div>
+<div class="date-container">
+    <p>前回：<input type="text" id="training-date-display-4" class="date-input" placeholder="MMDD" onclick="this.select()" onblur="updateTrainingDate('training-date-display-4', 'militaryPressDate')" onkeypress="checkEnter(event, 'training-date-display-4', 'militaryPressDate')"></p>
+</div>
 <table onclick="makeEditable(event)">
     <tr>
         <th>SET</th>
