@@ -20,16 +20,10 @@
         .highlight-green {
             background-color: #c6efce;
         }
-        .highlight-blue {
-            border: 2px solid blue;
-        }
-        .highlight-red {
-            border: 2px solid red;
-        }
         .header {
             display: flex;
             align-items: center;
-            margin-bottom: 0; /* ヘッダーと日付の間の隙間をなくす */
+            margin-bottom: 0;
         }
         .header h2 {
             margin-right: 20px;
@@ -37,18 +31,18 @@
         .date-container {
             display: flex;
             align-items: center;
-            margin-bottom: 20px; /* 日付とテーブルの間の隙間 */
+            margin-bottom: 20px;
         }
         .date-container p {
-            margin: 0; /* パラグラフのデフォルトマージンをなくす */
+            margin: 0;
             display: flex;
             align-items: center;
         }
         .date-container input {
-            margin-left: 0; /* テキストボックスと前回の隙間をなくす */
+            margin-left: 0;
             border: none;
             text-align: left;
-            font-size: 1em; /* 文字の大きさを「前回」と同じにする */
+            font-size: 1em;
         }
     </style>
     <script>
@@ -86,11 +80,59 @@
             }
         }
 
+        function makeEditable(event) {
+            const target = event.target;
+            if (target.tagName.toLowerCase() === 'td' && !target.classList.contains('non-editable')) {
+                const currentValue = target.innerText;
+                target.innerHTML = `<input type="text" value="${currentValue}" onblur="updateCell(this)" onkeypress="checkEnterCell(event, this)">`;
+                target.firstChild.focus();
+            }
+        }
+
+        function updateCell(input) {
+            const newValue = input.value;
+            const cell = input.parentElement;
+            cell.innerText = newValue;
+            saveTableData();
+        }
+
+        function checkEnterCell(event, input) {
+            if (event.key === 'Enter') {
+                updateCell(input);
+            }
+        }
+
+        function saveTableData() {
+            const table = document.querySelector('table');
+            const data = [];
+            for (let row of table.rows) {
+                const rowData = [];
+                for (let cell of row.cells) {
+                    rowData.push(cell.innerText);
+                }
+                data.push(rowData);
+            }
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTableData() {
+            const tableData = JSON.parse(localStorage.getItem('tableData'));
+            if (tableData) {
+                const table = document.querySelector('table');
+                for (let i = 0; i < table.rows.length; i++) {
+                    for (let j = 0; j < table.rows[i].cells.length; j++) {
+                        table.rows[i].cells[j].innerText = tableData[i][j];
+                    }
+                }
+            }
+        }
+
         window.onload = function() {
             const savedDate = localStorage.getItem('trainingDate');
             if (savedDate) {
                 document.getElementById('training-date-display').value = savedDate;
             }
+            loadTableData();
         }
     </script>
 </head>
@@ -141,11 +183,11 @@
         <td>2</td>
         <td>1</td>
         <td>1</td>
-        <td>限界まで</td>
-        <td>限界まで</td>
-        <td>限界まで</td>
-        <td>限界まで</td>
-        <td>限界まで</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
+        <td class="non-editable">-</td>
     </tr>
 </table>
 
